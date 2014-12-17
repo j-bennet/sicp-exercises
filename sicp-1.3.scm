@@ -1,5 +1,7 @@
 #lang scheme
 
+(define (square x) (* x x))
+
 (define (cube x) (* x x x))
 
 (define (inc n) (+ n 1))
@@ -103,3 +105,45 @@
         (iter (next x) (combiner (term x) accum))))
   (iter a null-value))
 
+; Exercise 1.33.  You can obtain an even more general version of accumulate
+; (exercise 1.32) by introducing the notion of a filter on the terms to be combined.
+; That is, combine only those terms derived from values in the range that satisfy
+; a specified condition. The resulting filtered-accumulate abstraction takes the
+; same arguments as accumulate, together with an additional predicate of one
+; argument that specifies the filter. Write filtered-accumulate as a procedure.
+
+(define (filtered-accumulate combiner null-value term a next b filter-cond)
+  (define (iter x accum)
+    (if (> x b)
+        accum
+        (if (filter-cond (term x))
+            (iter (next x) (combiner (term x) accum))
+            (iter (next x) accum))))
+  (iter a null-value))
+
+; Show how to express the following using filtered-accumulate:
+; a. the sum of the squares of the prime numbers in the interval a to b (assuming
+; that you have a prime? predicate already written)
+;
+; (filtered-accumulate + 0 square 1 inc 5 prime?)
+;
+; b. the product of all the positive integers less than n that are relatively
+; prime to n (i.e., all positive integers i < n such that GCD(i,n) = 1).
+;
+; (filtered-accumulate * 1 square 1 inc 5 relatively-prime?)
+;
+
+;Exercise 1.34.  Suppose we define the procedure
+
+(define (f g)
+  (g 2))
+
+;Then we have
+;(f square)
+;4
+;(f (lambda (z) (* z (+ z 1))))
+;6
+; What happens if we (perversely) ask the interpreter to evaluate the combination (f f)?
+; Explain.
+;
+; (it breaks)
