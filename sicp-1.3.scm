@@ -147,3 +147,56 @@
 ; Explain.
 ;
 ; (it breaks)
+
+; Next: "1.3.3  Procedures as General Methods" through the end of section 1.3: 
+; http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-12.html#%_sec_1.3.3
+;
+; Selected exercises: 1.35, 1.41, 1.42
+
+(define tolerance 0.00001)
+
+(define (fixed-point f first-guess)
+  (define (close-enough? v1 v2)
+    (< (abs (- v1 v2)) tolerance))
+  (define (try guess)
+    (let ((next (f guess)))
+      (if (close-enough? guess next)
+          next
+          (try next))))
+  (try first-guess))
+
+(define (average a b)
+  (/ (+ a b) 2))
+
+(define (sqrt x)
+  (fixed-point (lambda (y) (average y (/ x y)))
+               1.0))
+; Exercise 1.35.  Show that the golden ratio  (section 1.2.2) is a fixed point of the transformation
+; x -> 1 + 1/x, and use this fact to compute  by means of the fixed-point procedure.
+
+(define (golden-ratio)
+  (fixed-point (lambda (x) (+ 1 (/ 1 x))) 1))
+
+; Exercise 1.41.  Define a procedure double that takes a procedure of one argument
+; as argument and returns a procedure that applies the original procedure twice.
+; For example, if inc is a procedure that adds 1 to its argument, then (double inc)
+; should be a procedure that adds 2.
+
+(define (double f)
+  (lambda (x) (f (f x))))
+
+; What value is returned by
+;
+; (((double (double double)) inc) 5)
+;
+; Answer: 21
+
+;
+; Exercise 1.42.  Let f and g be two one-argument functions. The composition f after
+; g is defined to be the function x  f(g(x)). Define a procedure compose that
+; implements composition. For example, if inc is a procedure that adds 1 to its argument,
+;   ((compose square inc) 6)
+; 49
+;
+(define (compose f g)
+  (lambda (x) (f (g x))))
