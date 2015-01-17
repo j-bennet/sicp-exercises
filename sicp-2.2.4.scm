@@ -4,12 +4,13 @@
 ;
 ; ex:
 ;
-; 2.44
-; 2.45
 ; 2.46
+; 2.47 (just one implementation is enough)
 ; 2.48
-; 2.49
+; 2.49 (feel free to not do "d")
 ; 2.50
+; 2.51
+; 2.44 (optional). Apparently you can ONLY do 2.44 and 2.45 after you did all the above.
 
 ; Exercise 2.46.  A two-dimensional vector v running from the origin to a point can be
 ; represented as a pair consisting of an x-coordinate and a y-coordinate. Implement
