@@ -176,7 +176,7 @@
 (define (make-tree entry left right)
   (list entry left right))
 
-(define (make-leaf entry)
+(define (make-test-leaf entry)
   (list entry null null))
 
 ; Exercise 2.63.  Each of the following two procedures converts a binary
@@ -203,6 +203,35 @@
 ; If not, how do the results differ? What lists do the two
 ; procedures produce for the trees in figure 2.16?
 
+(define (make-test-tree-1)
+  (make-tree
+   7
+   (make-tree 3 (make-test-leaf 1) (make-test-leaf 5))
+   (make-tree 9 null (make-test-leaf 11))))
+
+(define (make-test-tree-2)
+  (make-tree
+   3
+   (make-test-leaf 1)
+   (make-tree
+    7
+    (make-test-leaf 5)
+    (make-tree 9 null (make-test-leaf 11)))))
+
+(define (make-test-tree-3)
+  (make-tree
+   5
+   (make-tree 3 (make-test-leaf 1) null)
+   (make-tree 9 (make-test-leaf 7) (make-test-leaf 11))))
+
+; Answer: they return the same result.
+; For the 3 test trees above, it's '(1 3 5 7 9 11)
+
 ; b. Do the two procedures have the same order of growth in the
 ; number of steps required to convert a balanced tree with n
 ; elements to a list? If not, which one grows more slowly?
+
+; Answer: both of them recursively go through all nodes of tree,
+; which makes it O(n).The difference is that
+; v1 uses (append left entry right), whereas 
+; v2 uses (copy-to-list left entry right).
