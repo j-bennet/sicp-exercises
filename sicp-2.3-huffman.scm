@@ -76,7 +76,7 @@
 
 ; Use the decode procedure to decode the message, and give the
 ; result.
-(decode sample-message sample-tree)
+; (decode sample-message sample-tree)
 
 ; Answer: (A D A B B C A)
 
@@ -103,13 +103,6 @@
         [(equal? x (car xs)) #t]
         [else (in-list? x (cdr xs))]))
 
-;(define (encode-symbol symbol tree)
-;  (if (in-tree? symbol tree)
-;      (if (in-tree? symbol (left-branch tree))
-;          (cons 0 (encode-symbol symbol (left-branch tree)))
-;          (cons 1 (encode-symbol symbol (right-branch tree))))
-;      (error "symbol is not in tree" symbol tree)))
-
 (define (encode-symbol symbol tree)
   (if (in-list? symbol (symbols tree))
       (if (leaf? tree) 
@@ -126,13 +119,32 @@
 ; (0 1 1 0 0 1 0 1 0 1 1 1 0)
 ; (0 1 1 0 0 1 0 1 0 1 1 1 0) - same as sample message
 
+(define (adjoin-set x set)
+  (cond ((null? set) (list x))
+        ((< (weight x) (weight (car set))) (cons x set))
+        (else (cons (car set)
+                    (adjoin-set x (cdr set))))))
+
+; The following procedure takes a list of symbol-frequency pairs
+; such as ((A 4) (B 2) (C 1) (D 1)) and constructs an initial
+; ordered set of leaves, ready to be merged according to the
+; Huffman algorithm:
+
+(define (make-leaf-set pairs)
+  (if (null? pairs)
+      '()
+      (let ((pair (car pairs)))
+        (adjoin-set (make-leaf (car pair)    ; symbol
+                               (cadr pair))  ; frequency
+                    (make-leaf-set (cdr pairs))))))
+
 ; Exercise 2.69.  The following procedure takes as its argument
 ; a list of symbol-frequency pairs (where no symbol appears
 ; in more than one pair) and generates a Huffman encoding
 ; tree according to the Huffman algorithm.
 
-;(define (generate-huffman-tree pairs)
-;  (successive-merge (make-leaf-set pairs)))
+(define (generate-huffman-tree pairs)
+  (successive-merge (make-leaf-set pairs)))
 
 ; Make-leaf-set is the procedure given above that transforms
 ; the list of pairs into an ordered set of leaves. Successive-merge
@@ -178,7 +190,22 @@
 
 ; Sha boom
 
+(define (song-tree)
+  (generate-huffman-tree '(('A 2) ('BOOM 1) ('GET 2) ('JOB 2) ('NA 16) ('SHA 3) ('YIP 9) ('WAH 1))))
+
+(define (song-tree-encoded)
+  (encode '('GET 'A 'JOB 'SHA 'NA 'NA 'NA 'NA 'NA 'NA 'NA 'NA 'GET 'A 'JOB 'SHA 'NA 'NA 'NA 'NA 'NA 'NA 'NA 'NA 'WAH 'YIP 'YIP 'YIP 'YIP 'YIP 'YIP 'YIP 'YIP 'YIP 'SHA 'BOOM) (song-tree)))
+
 ; How many bits are required for the encoding?
+
+; Answer:
+; (length (song-tree-encoded))
+; length is 87
+
 ; What is the smallest number of bits that would be needed
 ; to encode this song if we used a fixed-length code for
 ; the eight-symbol alphabet?
+
+; Answer:
+; (* (+ 2 1 2 2 16 3 9 1) 3)
+; 108
